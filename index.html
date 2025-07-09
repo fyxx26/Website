@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kasir Swalayan by Fikri</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Kasir Swalayan by Fikri</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form method="POST">
+        <input type="text" name="nama_barang" placeholder="Nama Barang" required>
+        <input type="number" name="harga" placeholder="Harga (Rp)" step="0.01" required>
+        <input type="number" name="jumlah" placeholder="Jumlah" required>
+        <button type="submit" name="tambah">Tambah</button>
+    </form>
+    <table>
+        <tr>
+            <th>Nama</th><th>Harga</th><th>Jumlah</th><th>Subtotal</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.nama }}</td>
+            <td>{{ format_rupiah(item.harga) }}</td>
+            <td>{{ item.jumlah }}</td>
+            <td>{{ format_rupiah(item.harga * item.jumlah) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="total">
+        <b>Total: {{ format_rupiah(total) }}</b>
+    </div>
+    <form method="POST">
+        <input type="number" name="bayar" placeholder="Bayar (Rp)" step="0.01" required>
+        <button type="submit" name="proses">Proses Pembayaran</button>
+    </form>
+    {% if struk %}
+    <div class="struk">
+        <pre>
+====== STRUK KASIR SWALAYAN by Fikri ======
+No Struk: {{ struk.no_struk }}
+Tanggal : {{ struk.waktu }}
+
+{% for item in struk.items %}
+{{ item.nama }} x{{ item.jumlah }} @ {{ format_rupiah(item.harga) }} = {{ format_rupiah(item.harga * item.jumlah) }}
+{% endfor %}
+
+TOTAL    : {{ format_rupiah(struk.total) }}
+BAYAR    : {{ format_rupiah(struk.bayar) }}
+KEMBALIAN: {{ format_rupiah(struk.kembalian) }}
+
+TERIMA KASIH TELAH BERBELANJA!
+        </pre>
+    </div>
+    {% endif %}
+    <div class="menu">
+        <a href="{{ url_for('riwayat') }}">Lihat Riwayat</a> |
+        <a href="{{ url_for('refresh') }}">Refresh</a>
+    </div>
+</body>
+</html>
